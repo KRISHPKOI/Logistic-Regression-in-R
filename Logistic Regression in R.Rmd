@@ -1,0 +1,108 @@
+---
+title: "Logistic Regression in R"
+author: "Krishna P Koirala"
+date: "6/1/2018"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+df.train <- read.csv("titanic_train.csv")
+```
+
+```{r}
+head(df.train)
+```
+
+```{r}
+str(df.train)
+```
+
+# EDA
+
+
+```{r}
+summary(df.train)
+```
+
+# Age column has 177 nas
+
+```{r}
+library(ggplot2)
+ggplot(aes(Survived), data = df.train) + geom_bar()
+```
+
+# Bar Plots
+
+```{r}
+ggplot(aes(Pclass), data = df.train) + geom_bar(aes(fill = factor(Survived)))
+ggplot(aes(Pclass), data = df.train) + geom_bar(aes(fill = factor(Pclass))) + facet_wrap(~Sex)
+ggplot(aes(Pclass), data = df.train) + geom_bar(aes(fill = factor(Sex))) + facet_wrap(~Survived)
+```
+
+
+# Histograms
+
+```{r}
+ggplot(aes(Age), data = df.train) + geom_histogram( fill = 'blue') + facet_wrap(~Sex ) + theme_classic()
+```
+
+```{r}
+ggplot(aes(SibSp), data = df.train) + geom_bar(aes(fill = factor(SibSp))) + facet_wrap(~Survived)
+```
+
+
+```{r}
+ggplot(aes(Fare), data = df.train) + geom_histogram(fill = 'green', color = 'black', alpha = 0.5)
+```
+
+# Dealing with missing values
+fill the average age by class on those places
+
+```{r}
+ggplot(aes(Pclass, Age), data = df.train) + geom_boxplot(aes(group = Pclass, fill = factor(Pclass), alpha = 0.4)) + scale_y_continuous(breaks = seq(0, 80, 2)) + theme_dark()
+```
+
+# Imputation of Age based on Pclass
+
+```{r}
+impute_age <- function(age, class){
+    out <- age
+    for (i in 1:length(age)){
+        if (is.na(age[i])){
+            if (class[1]==1){
+                out[i] <- 37
+            }else if (class[1]==2){
+                out[i] <- 29
+            }else{
+                out[i] <- 24
+            }
+        }else{
+            out[i] <- age[i]
+        }
+    }
+    return(out)
+}
+fixed.ages <- impute_age(df.train$Age, df.train$Pclass)
+```
+
+```{r}
+# Assigning the fixed value to the Age column
+df.train$Age <- fixed.ages
+```
+
+```{r}
+# Checking the summary of df.train
+# Looks cool, its fixed now
+summary(df.train)
+```
+
+# Model building
+
