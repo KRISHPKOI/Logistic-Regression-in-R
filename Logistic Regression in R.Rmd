@@ -68,6 +68,8 @@ fill the average age by class on those places
 
 ```{r}
 ggplot(aes(Pclass, Age), data = df.train) + geom_boxplot(aes(group = Pclass, fill = factor(Pclass), alpha = 0.4)) + scale_y_continuous(breaks = seq(0, 80, 2)) + theme_dark()
+
+by(subset(df.train, (!is.na(Age) == Age))$Age, subset(df.train, (!is.na(Age) == Age))$Pclass, mean)
 ```
 
 # Imputation of Age based on Pclass
@@ -78,11 +80,11 @@ impute_age <- function(age, class){
     for (i in 1:length(age)){
         if (is.na(age[i])){
             if (class[1]==1){
-                out[i] <- 37
+                out[i] <- 38
             }else if (class[1]==2){
-                out[i] <- 29
+                out[i] <- 30
             }else{
-                out[i] <- 24
+                out[i] <- 25
             }
         }else{
             out[i] <- age[i]
@@ -105,4 +107,122 @@ summary(df.train)
 ```
 
 # Model building
+
+```{r}
+colnames(df.train)
+# Selectin only needed columns
+library(dplyr)
+df.train <- subset(df.train, select = -c(PassengerId, Name, Ticket, Cabin))
+#df.train_new <- select(df.train, -c(PassengerId, Name, Ticket, Cabin))
+```
+
+```{r}
+colnames(df.train)
+```
+
+```{r}
+str(df.train)
+```
+
+```{r}
+# changing to factors
+df.train$Survived <- factor(df.train$Survived)
+df.train$Pclass <- factor(df.train$Pclass)
+df.train$Parch <- factor(df.train$Parch)
+df.train$SibSp <- factor(df.train$SibSp)
+```
+
+```{r}
+str(df.train)
+```
+
+```{r}
+# Creatinng model
+log.model <- glm(Survived ~. , family = binomial(link = 'logit'), data = df.train)
+```
+
+```{r}
+summary(log.model)
+```
+
+# Prediction 
+
+```{r}
+df.test <- read.csv('titanic_test.csv')
+```
+
+```{r}
+str(df.test)
+```
+
+```{r}
+# Remove some columns
+library(dplyr)
+df.test <- subset(df.test, select = -c(PassengerId, Name, Ticket, Cabin))
+```
+
+```{r}
+str(df.test)
+```
+
+
+```{r}
+summary(df.test)
+```
+
+# Dealing with Nas of test data
+
+
+```{r}
+y = subset(df.test, (!is.na(Age) == Age) & (!is.na(Fare) == Fare))
+summary(y)
+```
+
+```{r}
+ggplot(aes(factor(Pclass), Age), data = df.test) + geom_boxplot() + scale_y_continuous(breaks = seq(0, 80, 2)) + theme_dark()
+by(subset(df.test, (!is.na(Age) == Age))$Age, subset(df.test, (!is.na(Age) == Age))$Pclass, mean)
+```
+
+Now I want to replace nas of Age by 40 where Pclass =1, 
+nas of Age by 28 where Pclass =2, nas of Age by 24 where Pclass =3,
+
+
+
+```{r}
+# Imputation of Age based of Pclass
+
+impute_age1 <- function(age, class){
+    out <- age
+    for (i in 1:length(age)){
+        if (is.na(age[i])){
+            if (class[1]==1){
+                out[i] <- 40
+            }else if (class[1]==2){
+                out[i] <- 28
+            }else{
+                out[i] <- 24
+            }
+        }else{
+            out[i] <- age[i]
+        }
+    }
+    return(out)
+}
+fixed.ages <- impute_age1(df.test$Age, df.test$Pclass)
+```
+
+
+```{r}
+df.test$Age <- fixed.ages
+```
+
+
+```{r}
+summary(df.test)
+```
+
+
+
+
+
 
