@@ -126,10 +126,10 @@ str(df.train)
 
 ```{r}
 # changing to factors
-df.train$Survived <- factor(df.train$Survived)
-df.train$Pclass <- factor(df.train$Pclass)
-df.train$Parch <- factor(df.train$Parch)
-df.train$SibSp <- factor(df.train$SibSp)
+#df.train$Survived <- factor(df.train$Survived)
+#df.train$Pclass <- factor(df.train$Pclass)
+#df.train$Parch <- factor(df.train$Parch)
+#df.train$SibSp <- factor(df.train$SibSp)
 ```
 
 ```{r}
@@ -219,7 +219,56 @@ df.test$Age <- fixed.ages
 
 ```{r}
 summary(df.test)
+str(df.test)
 ```
+
+Fare contains 1 NA, I want to remove it.
+
+```{r}
+# Removing rows containing 1 NA in Fare column
+df.test <- na.omit(df.test)
+```
+
+```{r}
+# Checking if the Fare column still contains na
+filter(df.test,  is.na(Fare))
+```
+
+```{r}
+# changing to factors
+#df.test$Pclass <- factor(df.test$Pclass)
+#df.test$Parch <- factor(df.test$Parch)
+#df.test$SibSp <- factor(df.test$SibSp)
+```
+
+
+```{r}
+str(df.test)
+```
+
+
+```{r}
+df.test$Pred_Prob <- predict(log.model, df.test, type =  'response')
+head(df.test)
+```
+
+
+```{r}
+# create a predicted class variable to represent the predicted catagory:
+#Predicted Survived = 1 if predicted probability >= 0.50
+#Predicted Survived = 0 if predicted probability < 0.50
+df.test$Survived_Predicted <- ifelse(df.test$Pred_Prob >= 0.5, 1, 0)
+```
+
+
+Create a confuision matrix to summarize original Survived and the predicted Survived for the test dataset(df.test)
+
+```{r}
+head(df.test)
+```
+
+
+Finally I predicted the Survived people using the test data set. Survived_Predicted is the column of predictioin from the model.
 
 
 
