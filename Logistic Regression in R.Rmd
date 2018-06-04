@@ -3,8 +3,8 @@ title: "Logistic Regression in R"
 author: "Krishna P Koirala"
 date: "6/1/2018"
 output:
-  md_document:
-    variant: markdown_github
+   md_document:
+     variant: markdown_github
 ---
 
 ```{r setup, include=FALSE}
@@ -270,8 +270,50 @@ head(df.test)
 
 Finally I predicted the Survived people using the test data set. Survived_Predicted is the column of predictioin from the model.
 
+# Spliting train data and building model to check accuracy.
 
+```{r}
+library(caret)
+library(lattice)
+set.seed(101)
+trainIndex <- createDataPartition(df.train$Survived, p = .7, list = FALSE) 
+head(trainIndex)
+final.train <- df.train[ trainIndex,]
+final.test  <- df.train[-trainIndex,]
+```
 
+```{r}
+final.log.model <- glm(Survived ~., family = binomial(link = 'logit'), data = final.train)
+```
 
+```{r}
+summary(final.log.model)
+```
+
+```{r}
+fitted.probabilities <- predict(final.log.model, final.test, type = 'response')
+```
+
+```{r}
+fitted.results <- ifelse(fitted.probabilities > 0.5, 1, 0)
+```
+
+# Misclassification error
+```{r}
+misClassError <- mean(fitted.results !=final.test$Survived)
+```
+
+# Accuracy of the final.log.model(This is the Confusion matrix)
+
+```{r}
+accuracy <- 1-misClassError
+accuracy
+```
+
+# Confusion Matrix
+
+```{r}
+table(final.test$Survived, fitted.probabilities > 0.5)
+```
 
 
