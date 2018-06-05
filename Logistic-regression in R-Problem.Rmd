@@ -1,0 +1,54 @@
+---
+title: "Logistic regression in R"
+author: "Krishna P Koirala"
+date: "6/5/2018"
+output:
+    md_document:
+     variant: markdown_github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+adult <- read.csv('adult_sal.csv')
+```
+
+```{r}
+head(adult)
+```
+
+
+
+```{r}
+library(dplyr)
+adult <- select(adult, -X)
+```
+
+```{r}
+str(adult)
+```
+
+
+```{r}
+summary(adult)
+```
+
+
+
+```{r}
+table(adult$type_employer)
+```
+
+
+# Data Cleaning
+
+```{r}
+# combine employer type
+
+```
+
+
+
+
