@@ -42,11 +42,73 @@ table(adult$type_employer)
 ```
 
 
-# Data Cleaning
+# Feature engineering/Data Cleaning
 
 ```{r}
 # combine employer type
+unemp <- function(job){
+    job <- as.character(job)
+    if(job=='Never-worked' | job == 'Without-pay'){
+        return('Unemployed')
+    }else{
+        return(job)
+    }
+    
+}
+```
 
+```{r}
+adult$type_employer <- sapply(adult$type_employer, unemp)
+table(adult$type_employer)
+```
+
+```{r}
+# Group self employed
+group_emp <- function(job){
+    if(job =='Local-gov' | job == 'State-gov'){
+        return('SL-gov')
+    }else if (job=='Self-emp-inc' | job=='Self-emp-not-inc'){
+        return('self-emp')
+    }else{
+        return(job)
+    }
+}
+```
+
+```{r}
+adult$type_employer <- sapply(adult$type_employer, group_emp)
+```
+
+
+```{r}
+table(adult$marital)
+```
+
+
+```{r}
+# Marital status
+group_marital <- function(mar){
+    mar <- as.character(mar)
+    
+    # not married
+    if(mar=='Separated' | mar == 'Divorced' | mar == 'Widowed'){
+        return('Not-Married')
+        
+        #Never married
+    }else if(mar == 'Never-married'){
+        return(mar)
+        
+        # Married
+        
+    }else{
+        return('Married')
+    }
+}
+```
+
+```{r}
+adult$marital <- sapply(adult$marital, group_marital)
+table(adult$marital)
 ```
 
 
