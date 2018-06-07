@@ -112,5 +112,81 @@ table(adult$marital)
 ```
 
 
+```{r}
+#colnames(adult)
+table(adult$country)
+```
+
+
+
+```{r}
+# Grouping country column 
+Asia <- c('China','Hong','India','Iran','Cambodia','Japan', 'Laos' ,
+          'Philippines' ,'Vietnam' ,'Taiwan', 'Thailand')
+
+North.America <- c('Canada','United-States','Puerto-Rico' )
+
+Europe <- c('England' ,'France', 'Germany' ,'Greece','Holand-Netherlands','Hungary',
+            'Ireland','Italy','Poland','Portugal','Scotland','Yugoslavia')
+
+Latin.and.South.America <- c('Columbia','Cuba','Dominican-Republic','Ecuador',
+                             'El-Salvador','Guatemala','Haiti','Honduras',
+                             'Mexico','Nicaragua','Outlying-US(Guam-USVI-etc)','Peru',
+                            'Jamaica','Trinadad&Tobago')
+Other <- c('South')
+```
+
+
+
+```{r}
+group_country <- function(ctry){
+    if(ctry %in% Asia){
+        return('Asia')
+    }else if(ctry %in% North.America){
+        return('North.America')
+    }else if(ctry %in% Europe){
+        return('Europe')
+    }else if(ctry %in% Latin.and.South.America){
+        return('Latin.and.South.America')
+    }else{
+        return('Other')
+    }
+}
+```
+
+
+```{r}
+# Using sapply here. The syntex of sapply is.
+# sapply(object, function, ...) where object = list or df or vector
+adult$country <- sapply(adult$country, group_country)
+```
+
+```{r}
+table(adult$country)
+```
+
+### changing data type of newly created columns
+
+```{r}
+#str(adult)
+adult$type_employer <- as.factor(adult$type_employer)
+adult$country <- sapply(adult$country, factor)
+adult$marital <- sapply(adult$marital, factor)
+```
+
+```{r}
+str(adult)
+```
+
+
+## Dealing with missing values
+
+```{r}
+
+```
+
+
+
+
 
 
