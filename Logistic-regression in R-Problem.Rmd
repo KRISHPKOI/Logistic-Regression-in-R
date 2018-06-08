@@ -182,9 +182,46 @@ str(adult)
 ## Dealing with missing values
 
 ```{r}
-
+# Change ? to NA and drop those NAs
+adult[adult == '?'] <- NA
 ```
 
+
+```{r}
+# check the presence of NAs
+table(is.na(adult))
+```
+
+```{r}
+# Now drom those NAs
+adult <- na.omit(adult)
+table(is.na(adult))
+# all NAs are gone
+```
+
+# Visualization
+
+```{r}
+library(ggplot2)
+ggplot(aes(age), data = adult) + geom_histogram(aes(fill = income), color = 'black', binwidth = 1) + theme_bw()
+```
+
+```{r}
+colnames(adult)
+ggplot(aes(hr_per_week), data = adult) + geom_histogram()
+```
+
+```{r}
+# Changing the name of country column to Region
+# data <- rename(data, new_col_name = old_col_name)
+adult <- rename(adult, region = country)
+#colnames(adult)
+```
+
+
+```{r}
+ggplot(aes(region), data = adult) + geom_bar(aes(fill = income), color = 'black') + theme_bw() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
 
 
