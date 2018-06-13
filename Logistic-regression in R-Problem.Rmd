@@ -224,6 +224,88 @@ ggplot(aes(region), data = adult) + geom_bar(aes(fill = income), color = 'black'
 ```
 
 
+# Logistic regression
+
+```{r}
+str(adult)
+```
+
+# Split 
+
+```{r}
+library(caret)
+set.seed(101)
+trainIndex <- createDataPartition(adult$income, p = 0.7, list = FALSE,times = 1)
+adult_train <- adult[trainIndex,]
+adult_test <- adult[-trainIndex,]
+
+#library(caTools)
+#set.seed(101)
+#sample <- sample.split(adult$income, SplitRatio = 0.7)
+#train <- subset(adult, sample == T)
+#test <- subset(adult, sample == F)
+```
 
 
+```{r}
+model <- glm(income ~., family = binomial(link = 'logit'), data = adult_train)
+summary(model)
+```
+
+
+```{r}
+# Using step aic method for best variable selection
+library(MASS)
+# Perform stepwise model selection
+step <- stepAIC(model, direction = "both")
+```
+
+```{r}
+step$anova
+```
+
+
+```{r}
+# Now I am gonna use my final variables to make new model
+model_final <- glm(income ~ age + type_employer + fnlwgt + education + marital + 
+    occupation + relationship + race + sex + capital_gain + capital_loss + 
+    hr_per_week + region, family = binomial(link = 'logit'), data = adult_train)
+summary(model_final)
+```
+
+
+
+The model_final became our final model
+
+# Prediction
+
+```{r}
+adult_test$predicted.income <- predict(model_final, newdata = adult_test, type = 'response')
+```
+
+
+# Confusion matrix
+
+```{r}
+table(adult_test$income, adult_test$predicted.income >0.5)
+```
+
+# Accuracy of the model
+```{r}
+acc <- (6423+1355)/(6423+1355+940+497)
+acc # Our model is 84.4% accurate to predict the income
+```
+
+
+```{r}
+# Recall
+rec <- 6423/(6423+497)
+rec
+```
+
+```{r}
+# Precision
+prec <- 6423/(6423+940)
+prec
+```
 
